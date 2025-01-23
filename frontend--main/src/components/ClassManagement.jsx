@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
+import "../styles/classmanagement.css"
 const ClassManagement = () => {
   const [classes, setClasses] = useState([]);
   const [newClassName, setNewClassName] = useState("");

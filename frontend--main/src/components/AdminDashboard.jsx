@@ -7,13 +7,13 @@ const AdminDashboard = () => {
 
   const sections = [
     { label: "Students", icon: "📚", path: "/students" },
-    { label: "Staff", icon: "👩‍🏫", path: "/admin/staff" },
+    { label: "Staff", icon: "👩‍🏫", path: "/staff" },
     { label: "Notifications", icon: "🔔", path: "/admin/notifications" },
     { label: "Gallery", icon: "🖼️", path: "/admin/gallery" },
     { label: "Terms", icon: "📅", path: "/admin/terms" },
     { label: "Fees", icon: "💰", path: "/admin/fees" },
-    { label: "Grades", icon: "🎓", path: "/admin/grades" },
-    { label: "Classes", icon: "🏫", path: "/admin/classes" },
+    { label: "Grades", icon: "🎓", path: "/grades"},
+    { label: "Classes", icon: "🏫", path: "/classes" },
   ];
 
   return (

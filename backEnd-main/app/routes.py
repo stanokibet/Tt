@@ -888,7 +888,7 @@ def get_classes():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/delete-class/<int:class_id>', methods=['DELETE'])
+@routes.route('/delete-class/<int:class_id>', methods=['DELETE'])
 def delete_class(class_id):
     cls = Class.query.filter_by(id=class_id).first()
 
