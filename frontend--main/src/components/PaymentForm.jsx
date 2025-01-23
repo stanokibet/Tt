@@ -14,7 +14,7 @@ const PaymentForm = ({ studentId, onPaymentSuccess }) => {
   useEffect(() => {
     const fetchTerms = async () => {
       try {
-        const response = await fetch(`/terms`);
+        const response = await fetch(`https://49eca945-a85d-4041-8329-c8ccc69e464c-00-37km72cvzyu68.janeway.replit.dev:5000/terms`);
         if (!response.ok) throw new Error('Failed to fetch terms.');
         const data = await response.json();
         setTerms(data);

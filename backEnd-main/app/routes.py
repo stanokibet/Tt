@@ -1,5 +1,5 @@
 from flask import request, jsonify, Blueprint
-from .models import db, Staff,  Student, Payment, Fee, BusPayment, BusDestination, Term, Gallery, Notification, Grade, BoardingFee
+from .models import db, Staff,  Student, Payment, Fee, BusPayment, BusDestination, Term, Gallery, Notification, Grade, BoardingFee, Class
 from flask import current_app as app
 import logging
 from datetime import datetime
@@ -116,6 +116,7 @@ def get_students():
         {
             "id": student.id,
             "name": student.name,
+            "admission_number": student.admission_number,
             "grade": student.grade.name if student.grade else "N/A",
             "balance": student.balance,
             "arrears":student.arrears,
@@ -852,3 +853,53 @@ def get_active_term():
         return jsonify({"error": "No active term found"}), 404
 
     return jsonify(active_term.to_dict())
+
+@routes.route('/assign-class', methods=['POST'])
+def assign_class():
+    data = request.json
+    staff_id = data.get('staff_id')
+    class_id = data.get('class_id')
+
+    if not staff_id or not class_id:
+        return jsonify({"error": "Staff ID and Class ID are required"}), 400
+
+    # Fetch class and staff safely
+    cls = Class.query.filter_by(id=class_id).first()
+    staff = Staff.query.filter_by(id=staff_id).first()
+
+    if not cls:
+        return jsonify({"error": "Class not found"}), 404
+    if not staff:
+        return jsonify({"error": "Staff not found"}), 404
+
+    try:
+        cls.staff_id = staff.id  # Assign staff to the class
+        db.session.commit()
+        return jsonify({"message": "Staff assigned to class successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+@routes.route('/classes', methods=['GET'])
+def get_classes():
+    try:
+        classes = Class.query.all()
+        return jsonify([cls.to_dict() for cls in classes]), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/delete-class/<int:class_id>', methods=['DELETE'])
+def delete_class(class_id):
+    cls = Class.query.filter_by(id=class_id).first()
+
+    if not cls:
+        return jsonify({"error": "Class not found"}), 404
+
+    try:
+        db.session.delete(cls)
+        db.session.commit()
+        return jsonify({"message": "Class deleted successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+        

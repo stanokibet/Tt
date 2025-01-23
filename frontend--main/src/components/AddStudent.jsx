@@ -19,10 +19,10 @@ const AddStudent = () => {
     const fetchData = async () => {
       try {
         // Fetch grades and bus destinations
-        const gradeResponse = await axios.get('https://614458cc-233b-4e40-b95e-2b7212ee76e7-00-2ev80w0c23sgl.janeway.replit.dev:5000/grades');
+        const gradeResponse = await axios.get('https://49eca945-a85d-4041-8329-c8ccc69e464c-00-37km72cvzyu68.janeway.replit.dev:5000/grades');
         setGrades(gradeResponse.data);
 
-        const destinationResponse = await axios.get('https://614458cc-233b-4e40-b95e-2b7212ee76e7-00-2ev80w0c23sgl.janeway.replit.dev:5000/destinations');
+        const destinationResponse = await axios.get('https://49eca945-a85d-4041-8329-c8ccc69e464c-00-37km72cvzyu68.janeway.replit.dev:5000/destinations');
         setBusDestinations(destinationResponse.data);
       } catch (error) {
         console.error('Error fetching data:', error);

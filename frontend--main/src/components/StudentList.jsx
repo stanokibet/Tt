@@ -1,25 +1,31 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/studentList.css";
-import Header from './Header';
+import Header from "./Header";
 import { useNavigate } from "react-router-dom";
+
 const StudentList = ({ role, onSelectStudent }) => {
   const [students, setStudents] = useState([]);
+  const [filteredStudents, setFilteredStudents] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(""); // For search input
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  // Fetch students on component mount
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        let url = "https://614458cc-233b-4e40-b95e-2b7212ee76e7-00-2ev80w0c23sgl.janeway.replit.dev:5000/students"; // Default for Admin & Bursar
+        let url =
+          "https://49eca945-a85d-4041-8329-c8ccc69e464c-00-37km72cvzyu68.janeway.replit.dev:5000/students"; // Default for Admin & Bursar
 
         if (role === "teacher") {
           const staffId = localStorage.getItem("staffId"); // Assuming staffId is stored after login
-          url = `https://614458cc-233b-4e40-b95e-2b7212ee76e7-00-2ev80w0c23sgl.janeway.replit.dev:5000/staff/${staffId}/students`;
+          url = `https://49eca945-a85d-4041-8329-c8ccc69e464c-00-37km72cvzyu68.janeway.replit.dev:5000/staff/${staffId}/students`;
         }
 
         const response = await axios.get(url);
         setStudents(response.data);
+        setFilteredStudents(response.data); // Initialize filtered list
       } catch (err) {
         console.error(err);
         setError("Failed to fetch students. Please try again.");
@@ -27,6 +33,17 @@ const StudentList = ({ role, onSelectStudent }) => {
     };
     fetchStudents();
   }, [role]);
+
+  // Filter students based on the search query
+  useEffect(() => {
+    const results = students.filter(
+      (student) =>
+        student.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        student.admission_number?.toString().includes(searchQuery)
+    );
+    setFilteredStudents(results);
+  }, [searchQuery, students]);
+
   const handleAddStudent = () => {
     navigate("/add-student"); // Navigate to AddStudent page
   };
@@ -40,26 +57,45 @@ const StudentList = ({ role, onSelectStudent }) => {
       </button>
       {error && <p className="error-message">{error}</p>}
 
-      <div className="student-list">
-{students.map((student) => (
-  <div
-    key={student.id}
-    className="student-card"
-    onClick={() => onSelectStudent(student)}
-  >
-    <h3>{student.name}</h3>
-    <p>
-      <strong>Grade:</strong> {student.grade}
-    </p>
-    <p>
-      <strong>Balance:</strong> {student.balance}
-    </p>
-  </div>
-))}
+      {/* Search Box */}
+      <input
+        type="text"
+        placeholder="Search by name or admission number"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="search-box"
+      />
 
+      {/* Student Cards */}
+      <div className="student-list">
+        {filteredStudents.length > 0 ? (
+          filteredStudents.map((student) => (
+            <div
+              key={student.id}
+              className="student-card"
+              onClick={() => onSelectStudent(student)}
+            >
+              <h3>{student.name}</h3>
+                <p>
+                <strong>ADM:</strong> {student.admission_number}
+              </p>
+              <p>
+                <strong>Grade:</strong> {student.grade}
+              </p>
+              <p>
+                <strong>Balance:</strong> {student.balance}
+              </p>
+            </div>
+          ))
+        ) : (
+          <p className="no-results">No students found.</p>
+        )}
       </div>
+            
     </div>
   );
 };
 
 export default StudentList;
+
+

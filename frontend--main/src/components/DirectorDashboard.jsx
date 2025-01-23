@@ -16,7 +16,7 @@ const DirectorDashboard = () => {
     const fetchAdminsAndPayments = async () => {
       try {
         // Fetch admins
-        const adminResponse = await axios.get('https://backend1-nbbb.onrender.com/users?role=Admin');
+        const adminResponse = await axios.get('https://49eca945-a85d-4041-8329-c8ccc69e464c-00-37km72cvzyu68.janeway.replit.dev:5000/staff?role=Admin');
         setAdmins(adminResponse.data);
 
         // Fetch payments per day

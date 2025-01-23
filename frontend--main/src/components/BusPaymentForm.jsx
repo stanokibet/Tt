@@ -27,7 +27,7 @@ const BusPaymentForm = ({ studentId, onPaymentSuccess }) => {
     };
 
     try {
-      const response = await fetch('https://backend1-nbbb.onrender.com/api/bus-payments', {
+      const response = await fetch('https://49eca945-a85d-4041-8329-c8ccc69e464c-00-37km72cvzyu68.janeway.replit.dev:5000/bus-payments', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

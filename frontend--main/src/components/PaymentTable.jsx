@@ -10,8 +10,8 @@ const PaymentTable = ({ studentId }) => {
     const fetchPayments = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`https://614458cc-233b-4e40-b95e-2b7212ee76e7-00-2ev80w0c23sgl.janeway.replit.dev:5000/payments/student/${studentId}`);
-        const termResponse = await fetch(`https://614458cc-233b-4e40-b95e-2b7212ee76e7-00-2ev80w0c23sgl.janeway.replit.dev:5000/terms/active`);
+        const response = await fetch(`https://49eca945-a85d-4041-8329-c8ccc69e464c-00-37km72cvzyu68.janeway.replit.dev:5000/payments/student/${studentId}`);
+        const termResponse = await fetch(`https://49eca945-a85d-4041-8329-c8ccc69e464c-00-37km72cvzyu68.janeway.replit.dev:5000/terms/active`);
         if (!response.ok || !termResponse.ok) throw new Error("Failed to fetch payments or term.");
 
         const paymentData = await response.json();

@@ -10,7 +10,7 @@ import StudentDashboard from './components/StudentDashboard';
 import { AuthProvider } from './auth/AuthProvider';
 import PrivateRoute from './auth/PrivateRoute';
 import RoleBasedRoute from './auth/RoleBasedRoute';
-import StudentPaymentsByTerm from './components/StudentPaymentsByTerm';
+/*import StudentPaymentsByTerm from './components/StudentPaymentsByTerm';*/
 import AddStudent from './components/AddStudent';
 import StudentList from './components/StudentList';
 import PaymentTable from './components/PaymentTable';
@@ -25,10 +25,11 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/Payments"element={<LoginForm />} />
           <Route path="/login" element={<LoginForm />} />
+          <Route path="/Payments" element={<PaymentTable />} />
           <Route path="/students" element={<StudentList />} />
           <Route path="/student" element={<StudentDashboard />} />
-          <Route path="/payments" element={<StudentPaymentsByTerm />} />
-          
+          {/* <Route path="/payments" element={<StudentPaymentsByTerm />} />
+          */}
 
           {/* Role-Based Private Routes */}
           <Route path="/admin" element={<PrivateRoute><RoleBasedRoute role="admin"><AdminDashboard /></RoleBasedRoute></PrivateRoute>} />
