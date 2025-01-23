@@ -902,4 +902,66 @@ def delete_class(class_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
-        
+
+@routes.route('/api/stats', methods=['GET'])
+def get_stats():
+    from sqlalchemy import func
+
+    # Total fee expected (school-wide)
+    total_expected_fee = db.session.query(func.sum(Fee.amount)).scalar() or 0
+
+    # Total fee collected (school-wide)
+    total_fee_paid = db.session.query(func.sum(Payment.amount)).scalar() or 0
+
+    # Expenses (Example: Expenses table in your database)
+    total_expenses = db.session.query(func.sum(Expense.amount)).scalar() or 0
+
+    # Revenue
+    current_revenue = total_fee_paid - total_expenses
+
+    # Per-class stats
+    class_stats = []
+    classes = Class.query.all()
+    for c in classes:
+        total_class_fee = db.session.query(func.sum(Fee.amount)).filter(Fee.class_id == c.id).scalar() or 0
+        total_class_paid = db.session.query(func.sum(Payment.amount)).filter(Payment.class_id == c.id).scalar() or 0
+        class_stats.append({
+            "class_name": c.name,
+            "total_expected_fee": total_class_fee,
+            "total_fee_paid": total_class_paid,
+            "percentage_paid": round((total_class_paid / total_class_fee) * 100, 2) if total_class_fee > 0 else 0
+        })
+
+    stats = {
+        "total_expected_fee": total_expected_fee,
+        "total_fee_paid": total_fee_paid,
+        "percentage_paid": round((total_fee_paid / total_expected_fee) * 100, 2) if total_expected_fee > 0 else 0,
+        "total_expenses": total_expenses,
+        "current_revenue": current_revenue,
+        "class_stats": class_stats
+    }
+
+    return jsonify(stats)
+
+@routes.route('/api/prediction', methods=['POST'])
+def predict_days():
+    data = request.get_json()
+    daily_expenses = data.get("daily_expenses", 0)  # Average daily expenses
+    in_kind_payments = data.get("in_kind_payments", 0)  # Value of in-kind payments
+
+    # Total revenue (fees collected + in-kind payments)
+    total_revenue = db.session.query(db.func.sum(Payment.amount)).scalar() or 0
+    total_revenue += in_kind_payments
+
+    # Calculate operational days
+    operational_days = 0
+    if daily_expenses > 0:
+        operational_days = total_revenue / daily_expenses
+
+    # Return prediction result
+    return jsonify({
+        "total_revenue": total_revenue,
+        "daily_expenses": daily_expenses,
+        "operational_days": round(operational_days, 2)
+    })
+    
