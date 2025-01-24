@@ -394,30 +394,35 @@ def get_student_bus_destinations(student_id):
 @routes.route('/term', methods=['POST'])
 def create_term():
     data = request.get_json()
-    name = data['name']
-    start_date = datetime.strptime(data['start_date'], '%Y-%m-%d')
-    end_date = datetime.strptime(data['end_date'], '%Y-%m-%d')
+    if not all(key in data for key in ['name', 'start_date', 'end_date']):
+        return jsonify({"error": "Missing required fields"}), 400
 
-    term = Term(name=name, start_date=start_date, end_date=end_date)
+    try:
+        start_date = datetime.strptime(data['start_date'], '%Y-%m-%d').date()
+        end_date = datetime.strptime(data['end_date'], '%Y-%m-%d').date()
+    except ValueError:
+        return jsonify({"error": "Invalid date format, use YYYY-MM-DD"}), 400
+
+    if start_date >= end_date:
+        return jsonify({"error": "Start date must be before end date"}), 400
+
+    term = Term(name=data['name'], start_date=start_date, end_date=end_date)
     db.session.add(term)
     db.session.commit()
-    
-    return jsonify({"message": "Term created successfully", "term": {
-        'id': term.id,
-        'name': term.name,
-        'start_date': term.start_date,
-        'end_date': term.end_date,
-        "is_active": term.is_active
-    }})
+
+    return jsonify({"message": "Term created successfully", "term": term.to_dict()})
+
 
 @routes.route('/terms', methods=['GET'])
 def get_terms():
     terms = Term.query.all()
+    active_term = Term.get_active_term()
     return jsonify([{
         'id': term.id,
         'name': term.name,
         'start_date': term.start_date,
-        'end_date': term.end_date
+        'end_date': term.end_date,
+        'is_active': term.id == active_term.id if active_term else False
     } for term in terms])
 
 @routes.route('/bus-payments', methods=['POST'])

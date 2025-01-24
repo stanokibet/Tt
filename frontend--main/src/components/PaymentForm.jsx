@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const PaymentForm = ({ studentId, onPaymentSuccess }) => {
+const PaymentForm = ({ studentId, onPaymentSucces}) => {
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('cash');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -14,7 +14,9 @@ const PaymentForm = ({ studentId, onPaymentSuccess }) => {
   useEffect(() => {
     const fetchTerms = async () => {
       try {
-        const response = await fetch(`https://49eca945-a85d-4041-8329-c8ccc69e464c-00-37km72cvzyu68.janeway.replit.dev:5000/terms`);
+        const response = await fetch(
+          `https://49eca945-a85d-4041-8329-c8ccc69e464c-00-37km72cvzyu68.janeway.replit.dev:5000/terms`
+        );
         if (!response.ok) throw new Error('Failed to fetch terms.');
         const data = await response.json();
         setTerms(data);
@@ -38,13 +40,13 @@ const PaymentForm = ({ studentId, onPaymentSuccess }) => {
     }
 
     if (!termId) {
-      setError('No active term selected.');
+      setError('Please select an active term.');
       return;
     }
 
     setLoading(true);
     try {
-      const response = await fetch('/payments', {
+      const response = await fetch('https://49eca945-a85d-4041-8329-c8ccc69e464c-00-37km72cvzyu68.janeway.replit.dev:5000/payments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -65,6 +67,7 @@ const PaymentForm = ({ studentId, onPaymentSuccess }) => {
       setSuccess('Payment successfully added!');
       onPaymentSuccess();
       setAmount('');
+      setDescription('');
     } catch (err) {
       setError(err.message || 'Failed to add payment.');
     } finally {
@@ -76,8 +79,9 @@ const PaymentForm = ({ studentId, onPaymentSuccess }) => {
     <div>
       <h4>Make Payment</h4>
       <div>
-        <label>Amount:</label>
+        <label htmlFor="amount">Amount:</label>
         <input
+          id="amount"
           type="number"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
@@ -85,32 +89,42 @@ const PaymentForm = ({ studentId, onPaymentSuccess }) => {
         />
       </div>
       <div>
-        <label>Method:</label>
-        <select value={method} onChange={(e) => setMethod(e.target.value)}>
+        <label htmlFor="method">Method:</label>
+        <select
+          id="method"
+          value={method}
+          onChange={(e) => setMethod(e.target.value)}
+        >
           <option value="cash">Cash</option>
-          <option value="mpesa">Inkind</option>
-          <option value="paybill"></option>paybill
+          <option value="mpesa">In-Kind</option>
+          <option value="paybill">Paybill</option>
         </select>
       </div>
       <div>
-        <label>Date:</label>
+        <label htmlFor="date">Date:</label>
         <input
+          id="date"
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
         />
       </div>
       <div>
-        <label>Description:</label>
+        <label htmlFor="description">Description:</label>
         <textarea
+          id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Optional description"
         />
       </div>
       <div>
-        <label>Term:</label>
-        <select value={termId} onChange={(e) => setTermId(e.target.value)}>
+        <label htmlFor="term">Term:</label>
+        <select
+          id="term"
+          value={termId}
+          onChange={(e) => setTermId(e.target.value)}
+        >
           <option value="">Select Term</option>
           {terms.map((term) => (
             <option key={term.id} value={term.id}>
@@ -129,5 +143,6 @@ const PaymentForm = ({ studentId, onPaymentSuccess }) => {
 };
 
 export default PaymentForm;
+
 
 
